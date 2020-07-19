@@ -16,13 +16,6 @@ class Discord116Bot:
                 print("BOT: get command %s" % message.content)
                 await commands_dict[message.content]["command"](self.client, message)
 
-            elif message.content == COMMAND_BOT_SIGN + "help":
-                help_embed = discord.Embed(title="Help for 116 Studio Bot",
-                                           description="Help page have list of all commands and descriptions to it")
-                for command, info in commands_dict.items():
-                    help_embed.add_field(name=command, value=info["description"])
-                await message.channel.send(embed=help_embed)
-
     def run(self):
         self.client.run(self.token)
 
