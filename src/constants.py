@@ -1,1 +1,2 @@
 COMMAND_BOT_SIGN = "$"
+DATETIME_FORMAT = "%Y-%m-%d %H:%M.%S"

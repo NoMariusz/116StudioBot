@@ -12,9 +12,15 @@ class Discord116Bot:
         async def on_message(message):
             print("BOT: get message '%s' by '%s'" % (message.content, message.author))
 
-            if message.content in commands_dict.keys():
-                print("BOT: get command %s" % message.content)
-                await commands_dict[message.content]["command"](self.client, message)
+            for command in commands_dict.keys():
+                if message.content.find(command) == 0:
+                    if not commands_dict[command]["parametrized"]:
+                        if command == str(message.content):
+                            print("BOT: get command %s" % message.content)
+                            await commands_dict[message.content]["command"](self.client, message)
+                    else:
+                        print("BOT: get command %s" % message.content)
+                        await commands_dict[command]["command"](self.client, message)
 
     def run(self):
         self.client.run(self.token)
