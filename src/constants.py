@@ -1,0 +1,1 @@
+COMMAND_BOT_SIGN = "$"
