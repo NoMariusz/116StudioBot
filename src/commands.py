@@ -110,6 +110,35 @@ async def show_random_image_by_phrase(client, message: discord.Message, **kwargs
     await message.channel.send("Here you go :cowboy: \n %s" % image_link)
 
 
+async def on_dipon(client: discord.Client, message: discord.Message, **kwargs):
+    last_msg = (await message.channel.history(limit=2).flatten())[1]
+    emoji_names = ["🇩", "🇮", "🇵", "🇴", "🇳"]
+    for emoji in emoji_names:
+        await last_msg.add_reaction(emoji)
+    await message.delete()
+
+
+async def pin_word(client: discord.Client, message: discord.Message, **kwargs):
+    command_len = 0
+    if "command" in kwargs.keys():
+        command_len = len(kwargs["command"]) + 1
+    else:
+        print("BOT: ERROR - parametrized command function not get 'command' arg")
+
+    letter_to_emoji_translator = {chr(97 + x): chr(127462 + x) for x in range(0, 26)}
+    last_msg = (await message.channel.history(limit=2).flatten())[1]
+    word_to_translate = message.content.lower()[command_len:]
+
+    for letter in word_to_translate:
+        if letter in letter_to_emoji_translator.keys():
+            try:
+                await last_msg.add_reaction(letter_to_emoji_translator[letter])
+            except discord.errors.Forbidden:
+                break
+        else:
+            print("BOT: pin_word() - can't translate symbol %s to letter emoji" % letter)
+    await message.delete()
+
 commands_dict = {
     COMMAND_BOT_SIGN + "stupka":
         {"description": "Display who like foots", "command": on_stupki, "parametrized": False},
@@ -132,5 +161,11 @@ commands_dict = {
          "parametrized": True},
     COMMAND_BOT_SIGN + "showr":
         {"description": "Show random image from 20 first images at google search by given phrase", "command": show_random_image_by_phrase,
-         "parametrized": True}
+         "parametrized": True},
+    COMMAND_BOT_SIGN + "dipon":
+        {"description": "Pin word 'DIPON' by reactions in previous message on channel", "command": on_dipon,
+         "parametrized": False},
+    COMMAND_BOT_SIGN + "pin":
+        {"description": "Pin given word to previous message by reactions\nRemember that letters in that word can't repeats !!!",
+         "command": pin_word, "parametrized": True}
 }
