@@ -14,12 +14,12 @@ class Discord116Bot(discord.Client):
         print("BOT: get message '%s' by '%s'" % (message.content, message.author))
 
         for command in commands_dict.keys():
-            if message.content.find(command) == 0:
+            if message.content.find(command) == 0:      # to activate command when message starts with it
                 if not commands_dict[command]["parametrized"]:
                     if command == str(message.content):
                         print("BOT: get command %s" % message.content)
                         await commands_dict[message.content]["command"](self, message)
-                else:
+                elif str(message.content)[len(command)] == " ":   # to not activate command which name is sub-name other
                     print("BOT: get command %s" % message.content)
                     await commands_dict[command]["command"](self, message, command=command)
 
