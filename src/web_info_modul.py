@@ -38,4 +38,9 @@ class WebInfoModul:
             print("WebInfoModul: get_random_image_by_phrase() - can not find any image in requested page")
         return random.choice(images_links)
 
+    @staticmethod
+    def get_page_json_response(link: str):
+        page = requests.get(link)
+        return page.json()
+
 

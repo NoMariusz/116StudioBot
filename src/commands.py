@@ -14,7 +14,7 @@ async def make_help(client, message: discord.Message, **kwargs):
 
 
 async def on_stupki(client, message: discord.Message, **kwargs):
-    await message.channel.send("Michał :rofl:")
+    await message.channel.send(":michalbie:")
 
 
 async def display_michal_lol_time(client, message: discord.Message, **kwargs):
@@ -119,6 +119,8 @@ async def on_dipon(client: discord.Client, message: discord.Message, **kwargs):
 
 
 async def pin_word(client: discord.Client, message: discord.Message, **kwargs):
+    print(message.guild)
+    print(message.guild.emojis)
     command_len = 0
     if "command" in kwargs.keys():
         command_len = len(kwargs["command"]) + 1
@@ -129,15 +131,40 @@ async def pin_word(client: discord.Client, message: discord.Message, **kwargs):
     last_msg = (await message.channel.history(limit=2).flatten())[1]
     word_to_translate = message.content.lower()[command_len:]
 
+    is_external_emoji = False
+    external_emoji = ""
+
     for letter in word_to_translate:
-        if letter in letter_to_emoji_translator.keys():
+        if is_external_emoji:       # to pin server emojis
+            external_emoji += letter
+            if letter == ">":
+                is_external_emoji = False
+                try:
+                    await last_msg.add_reaction(external_emoji)
+                except Exception as e:
+                    print("BOT: Error - %s" % e)
+                external_emoji = ""
+        elif letter in letter_to_emoji_translator.keys():
             try:
                 await last_msg.add_reaction(letter_to_emoji_translator[letter])
             except discord.errors.Forbidden:
                 break
+        elif letter == "<": # to pin server emojis
+            is_external_emoji = True
+            external_emoji += letter
         else:
-            print("BOT: pin_word() - can't translate symbol %s to letter emoji" % letter)
+            try:  # to pin emoji's given in pin command
+                await last_msg.add_reaction(letter)
+            except discord.errors.HTTPException:
+                print("BOT: pin_word() - can't translate symbol %s to letter emoji" % letter)
     await message.delete()
+
+
+async def print_random_meme(client: discord.Client, message: discord.Message, **kwargs):
+    meme_response = WebInfoModul.get_page_json_response("https://meme-api.herokuapp.com/gimme")
+    while meme_response["nsfw"] or meme_response["spoiler"]:
+        meme_response = WebInfoModul.get_page_json_response("https://meme-api.herokuapp.com/gimme")
+    await message.channel.send("Go ahead! :laughing:\n %s" % meme_response["url"])
 
 commands_dict = {
     COMMAND_BOT_SIGN + "stupka":
@@ -167,5 +194,7 @@ commands_dict = {
          "parametrized": False},
     COMMAND_BOT_SIGN + "pin":
         {"description": "Pin given word to previous message by reactions\nRemember that letters in that word can't repeats !!!",
-         "command": pin_word, "parametrized": True}
+         "command": pin_word, "parametrized": True},
+    COMMAND_BOT_SIGN + "meme":
+        {"description": "Show for you random meme from reedit", "command": print_random_meme, "parametrized": False}
 }
