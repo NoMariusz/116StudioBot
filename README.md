@@ -1,7 +1,7 @@
 # 116StudioBot
 
 This is source code for discord bot to 116Studio channel on discord
-This bot is written with python and discord.py module
+This bot is written with python 3.7.4 and discord.py module
 
 Dependencies (pip freeze):
 * aiohttp==3.6.2
